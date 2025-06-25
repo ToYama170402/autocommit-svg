@@ -43,6 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: export-pdf
     steps:
+      - name: Set tag name
+        id: set_tag
+        run: echo "tag=pdf-export-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+
       - name: Download PDFs artifact
         uses: actions/download-artifact@v4
         with:
@@ -53,8 +57,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: pdf-export-$(date +'%Y%m%d%H%M%S')
-          name: PDF Export $(date +'%Y-%m-%d %H:%M:%S')
+          tag_name: ${{ steps.set_tag.outputs.tag }}
+          name: PDF Export ${{ steps.set_tag.outputs.tag }}
           body: |
             自動エクスポートされたPDFファイルを含みます。
           draft: false

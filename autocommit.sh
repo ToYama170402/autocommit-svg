@@ -14,3 +14,5 @@ echo "Change detected in ${SVG_FILE}. Committing..."
 # 変更をステージングしてコミット
 git add "${SVG_FILE}"
 git commit -m "style(svg): Update ${SVG_FILE}"
+COMMIT_HASH=$(git log --format=%H)
+inkscape "${SVG_FILE}" --export-filename="./output/${SVG_FILE}_${COMMIT_HASH}.pdf"

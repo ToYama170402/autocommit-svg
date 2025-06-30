@@ -1,1 +1,3 @@
-find . -name "*.svg" | entr -p ./autocommit-svg.sh /_
+#!/bin/sh
+
+find . -name "*.svg" | entr -p ./autocommit.sh /_

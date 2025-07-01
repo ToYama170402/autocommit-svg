@@ -1,0 +1,53 @@
+name: Export SVGs to PDF and Attach to Release
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  export-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Inkscape
+        run: sudo apt-get update && sudo apt-get install -y inkscape
+
+      - name: Find and export SVGs to PDF
+        run: |
+          mkdir -p output
+          for svg in $(find . -name '*.svg'); do
+            base=$(basename "$svg" .svg)
+            inkscape "$svg" --export-type=pdf --export-filename="output/${base}.pdf"
+          done
+
+      - name: Upload PDFs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: exported-pdfs
+          path: output/*.pdf
+
+  release-pdf:
+    runs-on: ubuntu-latest
+    needs: export-pdf
+    steps:
+      - name: Download PDFs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: exported-pdfs
+          path: output
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: pdf-export-$(date +'%Y%m%d%H%M%S')
+          name: PDF Export $(date +'%Y-%m-%d %H:%M:%S')
+          body: |
+            自動エクスポートされたPDFファイルを含みます。
+          draft: false
+          prerelease: false
+          files: output/*.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

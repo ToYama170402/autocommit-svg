@@ -22,8 +22,7 @@ jobs:
             fonts-noto-cjk-extra \
             fonts-noto \
             fonts-noto-mono \
-            fonts-noto-color-emoji \
-            fonts-poppins
+            fonts-noto-color-emoji
 
       - name: Find and export SVGs to PDF
         run: |
